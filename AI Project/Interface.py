@@ -2,7 +2,7 @@ from tkinter import *
 import tkinter.messagebox
 
 #-----------TODO-------------
-# 1. Figure out how to modularly display stock information and be able to resize it easily in the code
+# 1. Figure out how to modularly import images into the window and be able to resize it easily in the code
 # 2. Figure out how to make the different frames resizeable
 
 class Interface:

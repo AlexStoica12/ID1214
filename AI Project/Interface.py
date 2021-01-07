@@ -1,83 +1,80 @@
 from tkinter import *
 import tkinter.messagebox
+import matplotlib.pyplot as plt
+import yfinance as yf
 
-#-----------TODO-------------
-# 1. Figure out how to modularly import images into the window and be able to resize it easily in the code
-# 2. Figure out how to make the different frames resizeable
+def leftClick(event):
+    print("I LEFT CLICKED!") 
 
-class Interface:
+def rightClick(event):
+    print("I RIGHT CLICKED!")
 
-    def leftClick(self, event):
-        print("I LEFT CLICKED!") 
+def setStatus(newText):
+    statusBar.config(text = newText)
 
-    def rightClick(self, event):
-        print("I RIGHT CLICKED!")
+# ***** WINDOW ***** 
 
-    def setStatus(self, newText):
-        self.statusBar.config(text = newText)
+window = Tk() #Creates a window
+window.geometry("1280x720") #Set window dimensions to be 800x600
 
-    def __init__(self):
-         # ***** WINDOW ***** 
+windowTitle = "Stock Assistant" 
+window.title(windowTitle) #Change window title a certain string
 
-        window = Tk() #Creates a window
-        window.geometry("800x600") #Set window dimensions to be 800x600
+# ***** MENU *****
 
-        windowTitle = "Stock Assistant" 
-        window.title(windowTitle) #Change window title a certain string
+menu = Menu(window) #Creates a menu at the top of the window
+window.config(menu = menu) #Configures the window to show the menu
 
-        # ***** MENU *****
+fileMenu = Menu(menu, tearoff = 0) #Creates a file dropdown (tearoff = 0 removes a dotted line above the first cascade)
+menu.add_cascade(label = "File", menu = fileMenu)
+fileMenu.add_command(label = "Exit", command = window.quit) 
 
-        menu = Menu(window) #Creates a menu at the top of the window
-        window.config(menu = menu) #Configures the window to show the menu
+# ***** STATUS BAR *****
 
-        fileMenu = Menu(menu, tearoff = 0) #Creates a file dropdown (tearoff = 0 removes a dotted line above the first cascade)
-        menu.add_cascade(label = "File", menu = fileMenu)
-        fileMenu.add_command(label = "Exit", command = window.quit) 
+statusBar = Label(window, text = "Idle", bd = 1, relief = SUNKEN, anchor = W)
+statusBar.pack(side = BOTTOM, fill = X)
 
-        # ***** STATUS BAR *****
+# ***** PANEL FRAME *****
 
-        self.statusBar = Label(window, text = "Idle", bd = 1, relief = SUNKEN, anchor = W)
-        self.statusBar.pack(side = BOTTOM, fill = X)
+panelsFrame = Frame(window, bg = "magenta4") #Creates the frame for displaying stock panels
+panelsFrame.pack(side = LEFT, fill = Y)
 
-        # ***** PANEL FRAME *****
+panelCanvas = Canvas(panelsFrame, bg = "gray15", width = 400, height = 100, highlightthickness = 0) #Creates a canvas to display the title image
+panelCanvas.pack()
 
-        panelsFrame = Frame(window, bg = "blue") #Creates the frame for displaying stock panels
-        panelsFrame.pack(side = LEFT, fill = Y)
+stockPic = PhotoImage(file = "C:\\Users\\andre\\Desktop\\Python Workspace\\AI Project\\stocks.png") #Imports image to use for the stock panel title
+panelCanvas.create_image(200, 50, image=stockPic) #Sets the image to be the background of the canvas
 
-        stockPic = PhotoImage(file = "C:\\Users\\Andre\\Desktop\\Programs\\Python Programs\\AI Project\\stocks.png") #Imports image to use for the stock panel title
+searchEntry = Entry(panelsFrame, bd = 5) #Creates the entry for entering a stock to search for
+searchEntry.pack(side = LEFT, padx = 10, pady = 10, anchor = N)
 
-        panelsTitle = Label(panelsFrame, image = stockPic)
-        panelsTitle.pack()
+searchButton = Button(panelsFrame, text = "SEARCH", bd = 5, command = lambda : setStatus(searchEntry.get())) #Creates the stock search button
+searchButton.pack(side = LEFT, padx = 10, pady = 10, anchor = N)
 
-        searchEntry = Entry(panelsFrame, bd = 5) #Creates the entry for entering a stock to search for
-        searchEntry.pack(side = LEFT, padx = 10, pady = 10, anchor = N)
+# ***** ASSISTANT FRAME *****
 
-        searchButton = Button(panelsFrame, text = "SEARCH", bd = 5, command = lambda : self.setStatus(searchEntry.get())) #Creates the stock search button
-        searchButton.pack(side = LEFT, padx = 10, pady = 10, anchor = N)
+assistantFrame = Frame(window, bg = "gray25") #Creates the frame for displaying the Stock Assistant
+assistantFrame.pack(side = TOP, fill = X)
 
-        # ***** ASSISTANT FRAME *****
+assistantCanvas = Canvas(assistantFrame, bg = "gray25", width = 200, height = 100, highlightthickness = 0) #Creates the canvas for displaying the title image
+assistantCanvas.pack()
 
-        assistantFrame = Frame(window, bg = "red") #Creates the frame for displaying the Stock Assistant
-        assistantFrame.pack(side = TOP, fill = X)
+SApic = PhotoImage(file = "C:\\Users\\andre\\Desktop\\Python Workspace\\AI Project\\sa.png")
+assistantCanvas.create_image(102, 53, image = SApic) #Sets the image to be the background of the canvas
 
-        SApic = PhotoImage(file = "C:\\Users\\Andre\\Desktop\\Programs\\Python Programs\\AI Project\\sa.png")
+predictionButton = Button(assistantFrame, text = "Predict a stock for me!", fg = "white", bg = "blue", bd = 5) #Creates the button to ask for a stock value prediction
+predictionButton.pack(padx = 10, pady = 10)
 
-        SATitle = Label(assistantFrame, image = SApic) #Creates the [S]tock [A]ssistant title label
-        SATitle.pack() #Fills in the label to the full X
+# ***** PORTFOLIO FRAME *****
 
-        predictionButton = Button(assistantFrame, text = "Predict a stock for me!", fg = "white", bg = "blue", bd = 5) #Creates the button to ask for a stock value prediction
-        predictionButton.pack(padx = 10, pady = 10)
+portfolioFrame = Frame(window, bg = "gray28") #Creates the frame for displaying stock portfolio
+portfolioFrame.pack(side = BOTTOM, fill = BOTH, expand = TRUE)
 
-        # ***** PORTFOLIO FRAME *****
+portfolioCanvas = Canvas(portfolioFrame, bg = "gray28", width = 200, height = 100, highlightthickness = 0) #Creates a canvas to display the title image
+portfolioCanvas.pack()
 
-        portfolioFrame = Frame(window, bg = "green") #Creates the frame for displaying stock portfolio
-        portfolioFrame.pack(side = BOTTOM, fill = BOTH, expand = TRUE)
+portfolioPic = PhotoImage(file = "C:\\Users\\andre\\Desktop\\Python Workspace\\AI Project\\portfolio.png")
+portfolioCanvas.create_image(100, 50, image = portfolioPic) #Sets the image to be the background of the canvas
 
-        portfolioPic = PhotoImage(file = "C:\\Users\\Andre\\Desktop\\Programs\\Python Programs\\AI Project\\portfolio.png")\
+window.mainloop() #Continuos loop for the window
 
-        portfolioTitle = Label(portfolioFrame, image = portfolioPic)
-        portfolioTitle.pack()
-
-        window.mainloop() #Continuos loop for the window
-
-interface = Interface()

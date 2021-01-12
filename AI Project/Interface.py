@@ -79,6 +79,7 @@ def search(text):
         a_search = searchFig.add_subplot(111) #Create new subplot
         a_search.plot(dfSearch) #Plot the new data
         print(getCurrentPrice(text))
+        label1.configure(text = panelStocks[1]+ '\n Value: $' +str(getCurrentPrice(panelStocks[1])))
     else:
         tkinter.messagebox.showerror('Search Error', 'Sorry! Our database does not hold any information for \"' +text+ '\".')
 
@@ -116,31 +117,41 @@ def sellStock(stock):
 #Create a new window when the user wants a prediction
 def createPredictionWindow():
     predictionWindow = Toplevel(window)
-    predictionWindow.geometry("800x600")
+    predictionWindow.geometry("1280x800")
     predictionWindow.resizable(False, False)
     predictionWindow.title("Stock Prediction")
 
-    mainFrame = Frame(predictionWindow, bg = "midnight blue")
-    mainFrame.pack(fill = BOTH)
+    topFrame = Frame(predictionWindow, bg = "midnight blue")
+    topFrame.pack(side = TOP, fill = X)
 
-    chooseLabel = Label(mainFrame, text = 'Choose Stock: ', font = fontStyle, bg = 'midnight blue', fg = 'white')
+    chooseLabel = Label(topFrame, text = 'Choose Stock: ', font = fontStyle, bg = 'midnight blue', fg = 'white')
     chooseLabel.pack(side = LEFT)
 
-    stockOptions = StringVar(predictionWindow)
-    stockOptions.set(stocks[0])
+    predictionStocks = ['AXP', 'AAPL']
 
-    options = OptionMenu(mainFrame, stockOptions, *stocks)
+    stockOptions = StringVar(predictionWindow)
+    stockOptions.set(predictionStocks[0])
+
+    options = OptionMenu(topFrame, stockOptions, *predictionStocks)
     options.pack(side = LEFT)
 
-    confirmButton = Button(mainFrame, text = "Predict!", fg = "white", bg = "blue", bd = 5, font = fontStyleSmall)
+    confirmButton = Button(topFrame, text = "Predict!", fg = "white", bg = "blue", bd = 5, font = fontStyleSmall, command = lambda : predict(stockOptions.get()))
     confirmButton.pack(side = LEFT, padx = 10)
 
-    predictionCanvas = FigureCanvasTkAgg(plt, mainFrame)
-    predictionCanvas.get_tk_widget().pack(side = BOTTOM)
+    canvasFrame = Frame(predictionWindow, bg = "black")
+    canvasFrame.pack(side = TOP, fill = BOTH)
 
-def predict():
-    hello
+    predictionCanvas = Canvas(canvasFrame, bg = 'black', width = 1280, height = 800)
+    predictionCanvas.pack(side = TOP)
 
+    def predict(stock):
+        if stock == 'AXP':
+            predictionPic = PhotoImage(file = "C:\\Users\\Andre\\Desktop\\Programs\\Python Programs\\AI Project\\AXPPrediction.png")
+            predictionCanvas.create_image(640, 375, image = predictionPic)
+        elif stock == 'AAPL':
+            predictionPic = PhotoImage(file = "C:\\Users\\Andre\\Desktop\\Programs\\Python Programs\\AI Project\\AAPLPrediction.png")
+            predictionCanvas.create_image(640, 375, image = predictionPic)
+        predictionCanvas.draw()
 
 
 # ***** WINDOW ***** 
@@ -175,7 +186,7 @@ panelsFrame.grid(sticky = N, rowspan = 2, row = 0, column = 0)
 panelCanvas = Canvas(panelsFrame, bg = "midnight blue", width = 550, height = 100, highlightthickness = 0) #Creates a canvas to display the title image
 panelCanvas.grid(row = 0, column = 0, columnspan = 2)
 
-stockPic = PhotoImage(file = "C:\\Users\\andre\\Desktop\\Python Workspace\\AI Project\\stocks.png") #Imports image to use for the stock panel title
+stockPic = PhotoImage(file = "C:\\Users\\Andre\\Desktop\\Programs\\Python Programs\\AI Project\\stocks.png") #Imports image to use for the stock panel title
 panelCanvas.create_image(275, 50, image=stockPic) #Sets the image to be the background of the canvas
 
 searchEntry = Entry(panelsFrame, bd = 5, width = 50) #Creates the entry for entering a stock to search for
@@ -242,7 +253,7 @@ assistantFrame.grid(sticky = 'NSEW', row = 0, column = 1)
 assistantCanvas = Canvas(assistantFrame, bg = "dark slate blue", width = 640, height = 100, highlightthickness = 0) #Creates the canvas for displaying the title image
 assistantCanvas.grid(sticky = 'NSEW')
 
-SApic = PhotoImage(file = "C:\\Users\\andre\\Desktop\\Python Workspace\\AI Project\\sa.png")
+SApic = PhotoImage(file = "C:\\Users\\Andre\\Desktop\\Programs\\Python Programs\\AI Project\\sa.png")
 assistantCanvas.create_image(320, 53, image = SApic) #Sets the image to be the background of the canvas
 
 predictionButton = Button(assistantFrame, text = "Predict a stock for me!", fg = "white", bg = "blue", bd = 5, font = fontStyleSmall, command = lambda : createPredictionWindow()) #Creates the button to ask for a stock value prediction
@@ -257,7 +268,7 @@ portfolioFrame.grid_columnconfigure(0, weight = 1)
 portfolioCanvas = Canvas(portfolioFrame, bg = "slate blue", width = 640, height = 100, highlightthickness = 0) #Creates a canvas to display the title image
 portfolioCanvas.grid(row = 0, column = 0)
 
-portfolioPic = PhotoImage(file = "C:\\Users\\andre\\Desktop\\Python Workspace\\AI Project\\portfolio.png")
+portfolioPic = PhotoImage(file = "C:\\Users\\Andre\\Desktop\\Programs\\Python Programs\\AI Project\\portfolio.png")
 portfolioCanvas.create_image(320, 50, image = portfolioPic) #Sets the image to be the background of the canvas
 
 portfolioValue = Label(portfolioFrame, text = ("Current Value: $" + str(round(pValue, 2))), bg = "slate blue", fg = "white", font = fontStyle) #Label to display portfolio value
